@@ -9,5 +9,6 @@ __pycache__/
 
 # Because this file is personal for each computer
 *configs.json
+
 src/modules/base_de_dados.py
 src/modules/configs.py
