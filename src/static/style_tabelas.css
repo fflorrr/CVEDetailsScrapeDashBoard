@@ -41,6 +41,14 @@
     color: #00adb5;
 }
 
+.tabelaV3 {
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: space-between;
+    color: #00adb5;
+    width: 65%;
+}
+
 .headers {
     font-size: 1.5rem;
 }

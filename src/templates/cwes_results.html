@@ -60,7 +60,7 @@
             <div class="filtros">
                 <form class = "formPesquisa" href="overview_cwes/" method="GET">
                     <div class = "barraPesquisa">
-                        <input name="CWE" class = "barraTexto" placeholder = "Search for a CWE number...">
+                        <input type="number" name="CWE" class = "barraTexto" placeholder = "Search for a CWE number...">
                     </div>
                 </form>  
             </div>
@@ -78,7 +78,7 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <input class = "botaoFiltro" type = "submit" onCLick="pesquisaFiltrada()" value = "Filtrar">
+                <input class = "botaoFiltro" type = "submit" onclick="pesquisaFiltrada()" value = "Filtrar">              
             </div>
         </div>
 
