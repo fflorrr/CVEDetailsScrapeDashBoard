@@ -1,8 +1,7 @@
 import json
 import os
 
-BASE_PATH = "C:/Users/florc/OneDrive/Ambiente de Trabalho/informatiks/" #PATH
-FILE = BASE_PATH + "CVEDetailsScrapeDashBoard-main/src/modules/configs/configs.json"
+FILE = "modules/configs/configs.json"
 
 class Server:
     

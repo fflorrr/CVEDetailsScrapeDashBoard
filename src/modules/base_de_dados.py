@@ -2,10 +2,8 @@ import json
 from typing import Any
 from flask import Flask
 from flask_mysqldb import MySQL
-from . import configs
 
-FILE = configs.BASE_PATH + "CVEDetailsScrapeDashBoard-main/src/modules/configs/configs.json"
-
+FILE = "modules/configs/configs.json"
 
 class Base_de_Dados:
     
