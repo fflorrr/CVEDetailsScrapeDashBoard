@@ -99,7 +99,11 @@
                 {% for chave, valor in resultados["CWES"].items() %}
                 <tbody class = "lines">
                     <tr>
-                        <td> {{chave}} </td>
+                        <td>
+                            <a target="_blank" href="https://cwe.mitre.org/data/definitions/{{ chave.split('-')[1] }}.html">
+                                {{ chave }}
+                            </a>
+                        </td>
                         <td> {{valor[0]}} </td>
                         <td class="popUpTD" onmouseover="popUp(this, '{{valor[1]}}')" onmouseout="hidePopUp()">
                             {{valor[1]}} 
