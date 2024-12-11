@@ -60,7 +60,7 @@
             <div class="filtros">
                 <form class = "formPesquisa" href="overview_cwes/" method="GET">
                     <div class = "barraPesquisa">
-                        <input type="number" id="PesquisaDinamica" name="CWE" class = "barraTexto" placeholder = "Search for a CWE number...">
+                        <input type="number" id="PesquisaDinamica" name="CWE" class="barraTexto" placeholder="Search for a CWE number...">
                     </div>
                 </form>  
             </div>
@@ -138,18 +138,24 @@
         </div>
 
     </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $("#PesquisaDinamica").on("input", function() {
-                var value=$(this).val().trim();
-
-                $("table tbody tr").each(function() {
-                        var id=$(this).find("td:first").text().trim();
-                        if(id.startsWith(value) || value=="") {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
+        document.querySelector("#PesquisaDinamica").addEventListener("keypress", function (evt) {
+            if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
+            {
+                evt.preventDefault();
+            }
+        });
+        $(document).ready(function () {
+            $("#PesquisaDinamica").on("input", function () {
+                var value = $(this).val().trim();
+                $("table tbody tr").each(function () {
+                    var id = $(this).find("td:first").text().trim();
+                    if (id.includes(value) || value === "") {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
                 });
             });
         });
