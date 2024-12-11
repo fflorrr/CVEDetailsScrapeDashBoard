@@ -63,7 +63,7 @@ window.onload = function() {
                         });
                     }
                     
-                    // Adionamos a opção à lista
+                    // Adicionamos a opção à lista
                     option.classList.add('active');
                     lista_filtros.push(option.innerText);
                 }
@@ -75,6 +75,9 @@ window.onload = function() {
                 } else {
                     selected.innerText = lista_filtros[0];
                 }
+
+                pesquisaFiltrada();
+
             });
         });
         let help = dropdown.querySelectorAll('.active');

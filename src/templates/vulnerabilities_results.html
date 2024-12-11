@@ -97,7 +97,6 @@
                     {% endfor %}
                 </ul>
             </div>
-            <input class = "botaoFiltro" type = "submit" onCLick="pesquisaFiltrada()" value = "Filtrar">
             <input onCLick="location.href = '/overview_vulnerabilities/?Projeto=+All+&Categoria=+All+&Missing=+Valid+&Page=1';" class = "botaoRefresh" type = "submit" value = "Refresh">
         </div>
         
@@ -155,10 +154,4 @@
         </div>
 
     </body>
-    <script>
-        var aplicarFiltro = document.getElementsByClassName("menuFilter");
-        function filtroAplicado(){
-            pesquisaFiltrada();
-        }
-    </script>
 </html>
