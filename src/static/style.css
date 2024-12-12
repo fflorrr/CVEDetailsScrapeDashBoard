@@ -322,22 +322,6 @@ h1 {
     background: #1e2329;
 }
 
-.botaoRefresh {
-    margin: 2em 2em 2em 2em;
-    padding: 0;
-    border-radius: 0.5em;
-    min-width: 8rem;
-    cursor: pointer;
-    background: #323041;
-    border: 2px #2a2f3b solid;
-    color: #00adb5;
-    max-height: 5em;
-}
-
-.botaoRefresh:hover {
-    background: #1e2329;
-}
-
 .botaoBack {
     margin: 2em 2em 2em 2em;
     padding: 1em 0.5em;
