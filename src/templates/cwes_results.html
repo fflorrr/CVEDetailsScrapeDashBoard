@@ -64,6 +64,7 @@
                     </div>
                 </form>  
             </div>
+
             <div class="filtros">
                 <div id="Categoria" class="dropdown">
                     <span class="texto textoFiltro"> Category: </span>
@@ -73,12 +74,15 @@
                     </div>
                     <ul class="menuFilter">
                         <li class="active"> All </li>
-                        {% for linha in resultados["FiltrosCategorias"] %}
-                        <li> {{ linha }} </li>
+                        {% for i in range(resultados["FiltrosCategorias"]|length) %}
+                            <li data-value="{{resultados['FiltrosCategorias'][i]}}">
+                                {{resultados["FiltrosCategorias"][i]}} ({{resultados["ContagemCategorias"][i]}})
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
             </div>
+
         </div>
 
         <div class = "allLine">
@@ -118,7 +122,7 @@
 
         <div class="numVulnerabilidades">
             <div class="localTexto">
-                <span class="texto vulnerabilidadesValores"> {{resultados["ValoresCWE"][0]}} of {{resultados["ValoresCWE"][1]}} </span>
+                <span class="texto vulnerabilidadesValores"> {{resultados["ValoresCWE"][0]}} of <span id="jjjj"> {{resultados["ValoresCWE"][1]}} </span>
             </div>
         </div>
 
@@ -138,6 +142,7 @@
 
     </body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         document.querySelector("#PesquisaDinamica").addEventListener("keypress", function (evt) {
             if (evt.which != 8 && evt.which != 0 && evt.which < 48 || evt.which > 57)
@@ -158,5 +163,11 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        var offset =  '{{resultados["ValoresCWE"][0]}}'.split(' ')[0];
+        var limiteOffset = '{{resultados["ValoresCWE"][1]}}';
+        limita_paginas(parseInt(offset), parseInt(limiteOffset));
     </script>
 </html>

@@ -181,6 +181,16 @@ body {
     font-size: 4rem;
 }
 
+.esquerda a.desligada {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.direita a.desligada {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .esquerda a:hover{    
     text-decoration-color: #00adb5;
 }
@@ -382,6 +392,53 @@ h1 {
     height: auto;
 }
 
+.caixaDica {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.textoDica {
+    visibility: hidden;
+    background-color: #2a2f3b;
+    color: #00adb5;
+    text-align: center;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 0.5em;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    font-size: 0.8rem;
+    margin-bottom: 0.5em;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.caixaDica:hover .textoDica {
+    visibility: visible;
+    opacity: 1;
+}
+
+#LimiteCWEs {
+    min-width: 7.5em;
+}
+
+#LimiteCWEs .select {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+#LimiteCWEs .menuFilter {
+    top: 3em;
+}
+
 /* Aceita apenas números */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button{
@@ -389,5 +446,6 @@ input::-webkit-inner-spin-button{
     margin: 0;
 }
 input[type="number"] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }

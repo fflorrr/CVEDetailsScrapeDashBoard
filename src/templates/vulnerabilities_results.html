@@ -153,4 +153,9 @@
         </div>
 
     </body>
+    <script>
+        var offset =  '{{resultados["ValoresVulnerabilidade"][0]}}'.split(' ')[0];
+        var limiteOffset = '{{resultados["ValoresVulnerabilidade"][1]}}';
+        limita_paginas(parseInt(offset), parseInt(limiteOffset));
+    </script>
 </html>

@@ -13,9 +13,13 @@ function url_tratamento(){
     let url = new URL(window.location.href);
     let search_params = url.searchParams;
     let page = Number.parseInt(search_params.get("Page"));
-    if (isNaN(page)){
+
+    // Garantir que o valor de "Page" seja válido
+    if (isNaN(page) || page < 1) {
         page = 1;
+        search_params.set("Page", page);
     }
+
     return [url, search_params, page];
 }
 
@@ -39,4 +43,34 @@ function direita(){
     let [url, search_params, page] = url_tratamento();
     search_params.set("Page", page + 1)
     url_atualiza(url, search_params);
+}
+
+function limita_paginas(offset, limiteOffset) {
+    // Atualizamos a transparência das setas e limitamos paginas da tabela
+    var setaEsquerda = document.querySelector(".esquerda a");
+    var setaDireita = document.querySelector(".direita a");
+
+    let size = 15;
+
+    // Desabilitar seta esquerda para a página 0 e 1
+    if (offset <= 1) {
+        setaEsquerda.classList.add("desligada");
+    } else {
+        setaEsquerda.classList.remove("desligada");
+    }
+
+    if ((offset + size) > limiteOffset) {
+        setaDireita.classList.add("desligada");
+    } else {
+        setaDireita.classList.remove("desligada");
+    }
+
+    // Validar e corrigir o valor da página
+    let [url, search_params, page] = url_tratamento();
+    let totalPaginas = Math.ceil(limiteOffset / size);
+
+    if (page > totalPaginas) {
+        search_params.set("Page", totalPaginas);
+        url_atualiza(url, search_params);
+    }
 }

@@ -66,7 +66,7 @@
                     <span class="selected"> All </span>
                     <div class="caret"></div>
                 </div>
-                <ul class="menuFilter">
+                <ul id="categoriasGrafico" class="menuFilter">
                     <li class="active"> All </li>
                     {% for linha in resultados["FiltrosProjetos"] %}
                     <li> {{ linha }} </li>
@@ -97,18 +97,39 @@
         <div class="ChartTitle">
             <h1> Most Common CWEs </h1>
 
-            <form class = "formPesquisa" href="overview_cwes/" method="GET">
-                <div class = "barraPesquisa">
-                    <input name="CWE" class = "barraTexto" placeholder = "Search for a CWE number..."> 
-                </div>
-                <input class = "botaoFiltro resumeBotao" type = "submit" onCLick="atualizaGrafico(event)" value = "Filtrar">
-            </form>  
+            <div class="filtros">
 
+                <form class="formPesquisa" action="overview_cwes/" method="GET">
+                    <div class="caixaDica">
+                        <div class="barraPesquisa">
+                            <input name="CWE" type="text" class="barraTexto" placeholder="Search...">
+                        </div>
+                        <span class="textoDica">Separate different CWEs with spaces (e.g. 10 20 30)</span>
+                    </div>
+                    <input class="botaoFiltro resumeBotao" type="submit" onclick="atualizaGrafico(event)" value="Filtrar">
+                </form>
+                
+                <div id="LimiteCWEs" class="dropdown grafico">
+                    <span class="texto textoFiltro"> Nº of CWEs: </span>
+                    <div class="select">
+                        <span class="selected"> 5 </span>
+                        <div class="caret"></div>
+                    </div>
+                    <ul class="menuFilter">
+                        <li class="active">5</li>
+                        {% for i in range(6, 13) %}
+                            <li> {{i}} </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        
             <div class="myChartDiv">
                 <canvas id="myChart"></canvas>
             </div>
             <button class="botaoFiltro resumeBotao" onCLick="download()"> Download </button>
+
         </div>
-        
     </body>
 </html>

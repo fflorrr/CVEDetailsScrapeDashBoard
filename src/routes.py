@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, g, render_template, request, jsonify
 from modules.utils import find_num_linhas_alterado_ficheiro_repositorio, find_functions, calculo_diffs_diarios, consulta_base_de_dados, trata_categorias, trata_missing, trata_info_vulnerabidade, obter_id_projeto, obter_projeto_com_id
 
 bp = Blueprint("pages", __name__)
@@ -209,7 +209,7 @@ def overview_cwes():
     cwes: list = []
     for cwe in cwe_filter:
         cwes += consulta_base_de_dados(f"""SELECT CWE_INFO.V_CWE, CWE_INFO.DESCRIPTION, VULNERABILITY_CATEGORY.NAME , COALESCE(counter.count, 0) as "contagem"
-                                     FROM CWE_INFO 
+                                     FROM CWE_INFO
                                      LEFT JOIN VULNERABILITY_CATEGORY 
                                      ON VULNERABILITY_CATEGORY.ID_CATEGORY = CWE_INFO.ID_CATEGORY 
                                      LEFT JOIN (SELECT V_CWE, COUNT(*) as count FROM VULNERABILITIES_CWE WHERE V_CWE = '{cwe}' OR '{cwe}' = '' GROUP BY V_CWE) AS counter ON CWE_INFO.V_CWE = counter.V_CWE
@@ -218,9 +218,13 @@ def overview_cwes():
                                      ORDER BY contagem DESC;
                                      """)
     
-    dic: dict = {"CWES": {}, "FiltrosCategorias": [], "ValoresCWE": [f"{offset + 1} to {offset + size}", len(cwes)]}
+    dic: dict = {"CWES": {}, "FiltrosCategorias": [], "ContagemCategorias" : [], "ValoresCWE": [f"{offset + 1} to {offset + size}", len(cwes)]}
     cwes = cwes[offset : offset + size]
-    infoCategorias = consulta_base_de_dados(f"""SELECT DISTINCT(NAME) FROM VULNERABILITY_CATEGORY;""")
+    infoCategorias = consulta_base_de_dados(f"""SELECT VULNERABILITY_CATEGORY.NAME, COUNT(CWE_INFO.V_CWE)
+                                    FROM VULNERABILITY_CATEGORY
+                                    LEFT JOIN CWE_INFO 
+                                    ON VULNERABILITY_CATEGORY.ID_CATEGORY = CWE_INFO.ID_CATEGORY
+                                    GROUP BY VULNERABILITY_CATEGORY.NAME;""")
 
     # Adicionamos CWE ao numero para uma melhor leitura
     for linha in cwes:
@@ -229,6 +233,7 @@ def overview_cwes():
             dic["CWES"]["CWE-" + chave] = [linha[3], linha[1], linha[2]]
     for linha in infoCategorias:
         dic["FiltrosCategorias"].append(linha[0])
+        dic["ContagemCategorias"].append(linha[1])
 
     return render_template("cwes_results.html", resultados = dic)
 
@@ -274,9 +279,10 @@ def resumeflask():
     patches = consulta_base_de_dados(f"""SELECT COUNT(DISTINCT(P_COMMIT)) FROM PATCHES WHERE R_ID IN {lista_r_id} OR "{lista_r_id}" = "('', '')";""")
     cwes = consulta_base_de_dados(f"""SELECT COUNT(*) FROM CWE_INFO WHERE V_CWE IN (SELECT V_CWE FROM VULNERABILITIES_CWE WHERE V_ID IN (SELECT V_ID FROM VULNERABILITIES WHERE R_ID IN {lista_r_id})) OR "{lista_r_id}" = "('', '')";""")
     projetos = consulta_base_de_dados(f"""SELECT COUNT(*) FROM REPOSITORIES_SAMPLE WHERE R_ID IN {lista_r_id} OR "{lista_r_id}" = "('', '')";""")
-    
+    infoCategorias = consulta_base_de_dados(f"""SELECT VULNERABILITY_CATEGORY.NAME FROM VULNERABILITY_CATEGORY""")
+
     # Construir a lista de resultados
-    dic: dict = {"FiltrosProjetos": []}
+    dic: dict = {"FiltrosProjetos": [], "FiltrosCategorias": []}
     dic_auxiliar: dict = {}
 
     dic_auxiliar["Vulnerabilities"] = vulnerabilidades[0][0]
@@ -289,7 +295,14 @@ def resumeflask():
     
     for linha in infoProjetos:
         dic["FiltrosProjetos"].append(linha[0])
-        
+
+    categorias_comuns = getattr(g, 'categorias_comuns', None)
+    if categorias_comuns:
+        dic["FiltrosCategorias"] = categorias_comuns
+    else:
+        for linha in infoCategorias:
+            dic["FiltrosCategorias"].append(linha[0])
+
     return render_template("resume.html", resultados=dic)
 
 @bp.route("/overview_vulnerability/", methods=["GET"])
@@ -361,23 +374,37 @@ def grafico():
         lista_r_id = tuple(lista_r_id)
             
     dic: dict = {"Data": [], "Titulos": []}
-    
+
     cwes_filtros = request.args.get("CWES")
-    if not cwes_filtros:
-        # Escolher as 5 mais comuns
+    cwe_limite = request.args.get("cwe_limit", default=5, type=int)
+    categoria_filtro = request.args.get("Categoria")
+
+    if cwes_filtros:
+        dic["Titulos"] = [[f'CWE-{cwe}'] for cwe in cwes_filtros.split(",")]
+
+    if not categoria_filtro:
+        # Escolher os X mais comuns
         cwes_comuns = consulta_base_de_dados(f"""SELECT V_CWE, COUNT(*) 
                                             FROM VULNERABILITIES_CWE 
                                             LEFT JOIN VULNERABILITIES 
                                             ON VULNERABILITIES.V_ID = VULNERABILITIES_CWE.V_ID
                                             WHERE R_ID IN {lista_r_id} OR "{lista_r_id}" = "('', '')"
-                                            GROUP BY VULNERABILITIES_CWE.V_CWE ORDER BY COUNT(*) DESC LIMIT 5;""");
+                                            GROUP BY VULNERABILITIES_CWE.V_CWE ORDER BY COUNT(*) DESC LIMIT {cwe_limite};""");
         for cwe in cwes_comuns:
             dic["Titulos"].append([f'CWE-{str(cwe[0])}'])
-    
+
     else:
-        for cwe in cwes_filtros.split(","):
-            dic["Titulos"].append([f'CWE-{str(cwe)}'])
-        
+        cwes_comuns = consulta_base_de_dados(f"""SELECT V_CWE, COUNT(*) 
+                                            FROM VULNERABILITIES_CWE 
+                                            LEFT JOIN VULNERABILITIES 
+                                            ON VULNERABILITIES.V_ID = VULNERABILITIES_CWE.V_ID
+                                            JOIN VULNERABILITY_CATEGORY ON VULNERABILITY_CATEGORY.ID_CATEGORY = VULNERABILITIES_CWE.ID_CATEGORY
+                                            WHERE VULNERABILITY_CATEGORY.NAME = '{categoria_filtro}' 
+                                            WHERE R_ID IN {lista_r_id} OR "{lista_r_id}" = "('', '')"
+                                            GROUP BY VULNERABILITIES_CWE.V_CWE ORDER BY COUNT(*) DESC LIMIT {cwe_limite};""");
+        for cwe in cwes_comuns:
+            dic["Titulos"].append([f'CWE-{str(cwe[0])}'])
+
     # Fazer a contagem para cada ano
     var_help = []
     for cwe in dic["Titulos"]:
