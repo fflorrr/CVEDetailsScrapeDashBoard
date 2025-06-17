@@ -106,15 +106,21 @@ def overview_patch_info():
     info_json = request.args.get('info')
     commit = request.args.get('commit')
     projeto = request.args.get('projeto')
-    info_array = jsonify(info_json).get_data() if info_json else []
-    info_array = info_array.decode('utf-8').strip(' " \ []').split('\"')
+    try:
+        info_array = jsonify(info_json).get_data() if info_json else []
+        info_array = info_array.decode('utf-8').strip(r' " \ []').split('"')
+    except Exception as e:
+        info_array = []
     
-    dic: dict = {"Resultados": [], "Tamanho": 0, "Commit": commit, "Projeto": ""}
+    dic: dict = {"Resultados": [], "Tamanho": 0, "Commit": commit, "Projeto": "", "CVE": []}
     
     for p_id in info_array:
-        p_id = p_id.strip("\\")
-        function = find_functions(p_id, projeto)
-        dic["Resultados"] += function["data"]
+        try:
+            p_id = p_id.strip("\\[]\n")
+            function = find_functions(p_id, projeto)
+            dic["Resultados"] += function["data"]
+        except Exception as e:
+            print(f"Erro no p_id {p_id}: {e}")
 
     for file in dic["Resultados"]:
         try:
@@ -127,6 +133,15 @@ def overview_patch_info():
         
     dic["Tamanho"] = len(dic["Resultados"])
     dic["Projeto"] = projeto
+
+    # CVE relacionados
+    resultados = consulta_base_de_dados(f"""SELECT DISTINCT V.CVE, V.V_ID
+                                        FROM   VULNERABILITIES V
+                                        JOIN PATCHES P ON V.V_ID = P.V_ID;
+                                        """)
+    for cve, v_id in resultados:
+        if cve:
+            dic["CVE"].append([cve, v_id])
 
     return render_template("patch_overview.html", resultados=dic)
 

@@ -348,6 +348,11 @@ h1 {
     background: #1e2329;
 }
 
+.botaoBackCentrado {
+    display: flex;
+    justify-content: center;
+}
+
 .espaçoFiltros {
     display: flex;
     justify-content: center;

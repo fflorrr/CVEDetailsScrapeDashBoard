@@ -109,5 +109,33 @@
             </div>
         </div>
 
+        {% if resultados["CVE"] %}
+        <div class="caixas">
+            <div class="caixa">
+                <table class="tabela">
+                    <thead class="headers">
+                        <tr>
+                            <th class="head"> Vulnerabilities </th>
+                        </tr>
+                    </thead>
+                    {% for nome_cve, id_cve in resultados["CVE"][:5] %}
+                    <tbody class = "lines">
+                        <tr>
+                            <td> 
+                                <a target="_blank" href="https://vulnerabilitydataset.dei.uc.pt/overview_vulnerability/?id={{ id_cve }}">
+                                    {{ nome_cve }}
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="botaoBackCentrado">
+            <input onclick="history.back()" class="botaoBack" type="submit" value="Back">
+        </div>
+        {% endif %}
+
     </body>
 </html>
