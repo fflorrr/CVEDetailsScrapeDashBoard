@@ -136,9 +136,11 @@ def overview_patch_info():
 
     # CVE relacionados
     resultados = consulta_base_de_dados(f"""SELECT DISTINCT V.CVE, V.V_ID
-                                        FROM   VULNERABILITIES V
-                                        JOIN PATCHES P ON V.V_ID = P.V_ID;
+                                        FROM VULNERABILITIES V
+                                        JOIN PATCHES P ON V.V_ID = P.V_ID
+                                        WHERE P.P_COMMIT = '{commit}';
                                         """)
+    print(resultados)
     for cve, v_id in resultados:
         if cve:
             dic["CVE"].append([cve, v_id])

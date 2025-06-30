@@ -111,18 +111,18 @@
 
         {% if resultados["CVE"] %}
         <div class="caixas">
-            <div class="caixa">
+            <div class="caixa caixaPatch">
                 <table class="tabela">
                     <thead class="headers">
                         <tr>
                             <th class="head"> Vulnerabilities </th>
                         </tr>
                     </thead>
-                    {% for nome_cve, id_cve in resultados["CVE"][:5] %}
+                    {% for nome_cve, id_cve in resultados["CVE"] %}
                     <tbody class = "lines">
                         <tr>
                             <td> 
-                                <a target="_blank" href="https://vulnerabilitydataset.dei.uc.pt/overview_vulnerability/?id={{ id_cve }}">
+                                <a href="https://vulnerabilitydataset.dei.uc.pt/overview_vulnerability/?id={{ id_cve }}">
                                     {{ nome_cve }}
                                 </a>
                             </td>
